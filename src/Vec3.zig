@@ -4,6 +4,10 @@ e: [3]f64,
 
 const Vec3 = @This();
 
+pub fn zero() Vec3 {
+    return .{ .e = [3]f64{ 0.0, 0.0, 0.0 } };
+}
+
 pub fn create(e0: f64, e1: f64, e2: f64) Vec3 {
     return .{ .e = [3]f64{ e0, e1, e2 } };
 }
@@ -112,6 +116,11 @@ fn expectEqualVector(expected: []const f64, actual: Vec3) !void {
     for (expected) |v, i| {
         try std.testing.expectApproxEqRel(v, actual.e[i], 0.0001);
     }
+}
+
+test "Vec3.zero" {
+    const v = Vec3.zero();
+    try expectEqualVector(&[_]f64{ 0.0, 0.0, 0.0 }, v);
 }
 
 test "Vec3.create" {

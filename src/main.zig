@@ -12,7 +12,7 @@ pub fn main() anyerror!void {
 
     var j: i32 = image_height - 1;
     while (j >= 0) : (j -= 1) {
-        try err_writer.print("\rScanlines remaining: {d: <3}", .{ @intCast(u32, j) });
+        try err_writer.print("\rScanlines remaining: {d: <3}", .{@intCast(u32, j)});
 
         var i: u32 = 0;
         while (i < image_width) : (i += 1) {

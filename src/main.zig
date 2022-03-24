@@ -1,5 +1,9 @@
 const std = @import("std");
 
+const Vec3 = @import("./Vec3.zig");
+const Color = Vec3.Color;
+const writeColor = @import("./color.zig").writeColor;
+
 pub fn main() anyerror!void {
     const image_width = 256;
     const image_height = 256;
@@ -16,15 +20,12 @@ pub fn main() anyerror!void {
 
         var i: u32 = 0;
         while (i < image_width) : (i += 1) {
-            const r = @intToFloat(f64, i) / (image_width - 1);
-            const g = @intToFloat(f64, j) / (image_height - 1);
-            const b = 0.25;
-
-            const ir = @floatToInt(u32, 255.999 * r);
-            const ig = @floatToInt(u32, 255.999 * g);
-            const ib = @floatToInt(u32, 255.999 * b);
-
-            try writer.print("{} {} {}\n", .{ ir, ig, ib });
+            const pixel_color = Color.create(
+                @intToFloat(f64, i) / (image_width - 1),
+                @intToFloat(f64, j) / (image_height - 1),
+                0.25,
+            );
+            try writeColor(writer, &pixel_color);
         }
     }
 

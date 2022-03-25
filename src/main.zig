@@ -6,21 +6,27 @@ const Point3 = Vec3.Point3;
 const writeColor = @import("./color.zig").writeColor;
 const Ray = @import("./Ray.zig");
 
-fn hitSphere(center: Point3, radius: f64, r: Ray) bool {
+fn hitSphere(center: Point3, radius: f64, r: Ray) f64 {
     const oc = r.origin().sub(center);
-    const a = Vec3.dot(r.direction(), r.direction());
-    const b = 2.0 * Vec3.dot(oc, r.direction());
-    const c = Vec3.dot(oc, oc) - (radius * radius);
-    const discriminant = (b * b) - (4 * a * c);
-    return (discriminant > 0.0);
+    const a = r.direction().lengthSquared();
+    const half_b = Vec3.dot(oc, r.direction());
+    const c = oc.lengthSquared() - radius * radius;
+    const discriminant = half_b * half_b - a * c;
+
+    return switch (discriminant) {
+        -std.math.inf(f64)...0 => -1.0,
+        else => (-half_b - std.math.sqrt(discriminant)) / a,
+    };
 }
 
 fn rayColor(r: Ray) Color {
-    if (hitSphere(Point3.create(0.0, 0.0, -1.0), 0.5, r)) {
-        return Color.create(1.0, 0.0, 0.0);
+    var t = hitSphere(Point3.create(0.0, 0.0, -1.0), 0.5, r);
+    if (t > 0.0) {
+        const N = r.at(t).sub(Vec3.create(0.0, 0.0, -1.0)).unitVector();
+        return Color.create(N.x() + 1.0, N.y() + 1.0, N.z() + 1.0).mulScalar(0.5);
     } else {
         const unit_direction = r.dir.unitVector();
-        const t = 0.5 * (unit_direction.y() + 1.0);
+        t = 0.5 * (unit_direction.y() + 1.0);
         return Color.create(1.0, 1.0, 1.0).mulScalar(1.0 - t).add(Color.create(0.5, 0.7, 1.0).mulScalar(t));
     }
 }

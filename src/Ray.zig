@@ -10,8 +10,16 @@ pub fn zero() Ray {
     return .{ .orig = Point3.zero(), .dir = Vec3.zero() };
 }
 
-pub fn create(origin: Point3, direction: Vec3) Ray {
-    return .{ .orig = origin, .dir = direction };
+pub fn create(the_origin: Point3, the_direction: Vec3) Ray {
+    return .{ .orig = the_origin, .dir = the_direction };
+}
+
+pub fn origin(self: *const Ray) Point3 {
+    return self.orig;
+}
+
+pub fn direction(self: *const Ray) Vec3 {
+    return self.dir;
 }
 
 pub fn at(self: *const Ray, t: f64) Point3 {
@@ -30,6 +38,16 @@ test "Ray.create" {
     const r = Ray.create(Vec3.create(1.0, 2.0, 3.0), Vec3.create(4.0, 5.0, 6.0));
     try expectEqualVector(&[_]f64{ 1.0, 2.0, 3.0 }, r.orig);
     try expectEqualVector(&[_]f64{ 4.0, 5.0, 6.0 }, r.dir);
+}
+
+test "Ray.origin" {
+    const r = Ray.create(Vec3.create(1.0, 2.0, 3.0), Vec3.create(4.0, 5.0, 6.0));
+    try expectEqualVector(&[_]f64{ 1.0, 2.0, 3.0 }, r.origin());
+}
+
+test "Ray.direction" {
+    const r = Ray.create(Vec3.create(1.0, 2.0, 3.0), Vec3.create(4.0, 5.0, 6.0));
+    try expectEqualVector(&[_]f64{ 4.0, 5.0, 6.0 }, r.direction());
 }
 
 test "Ray.at" {

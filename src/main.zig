@@ -6,10 +6,23 @@ const Point3 = Vec3.Point3;
 const writeColor = @import("./color.zig").writeColor;
 const Ray = @import("./Ray.zig");
 
+fn hitSphere(center: Point3, radius: f64, r: Ray) bool {
+    const oc = r.origin().sub(center);
+    const a = Vec3.dot(r.direction(), r.direction());
+    const b = 2.0 * Vec3.dot(oc, r.direction());
+    const c = Vec3.dot(oc, oc) - (radius * radius);
+    const discriminant = (b * b) - (4 * a * c);
+    return (discriminant > 0.0);
+}
+
 fn rayColor(r: Ray) Color {
-    const unit_direction = r.dir.unitVector();
-    const t = 0.5 * (unit_direction.y() + 1.0);
-    return Color.create(1.0, 1.0, 1.0).mulScalar(1.0 - t).add(Color.create(0.5, 0.7, 1.0).mulScalar(t));
+    if (hitSphere(Point3.create(0.0, 0.0, -1.0), 0.5, r)) {
+        return Color.create(1.0, 0.0, 0.0);
+    } else {
+        const unit_direction = r.dir.unitVector();
+        const t = 0.5 * (unit_direction.y() + 1.0);
+        return Color.create(1.0, 1.0, 1.0).mulScalar(1.0 - t).add(Color.create(0.5, 0.7, 1.0).mulScalar(t));
+    }
 }
 
 pub fn main() anyerror!void {
@@ -33,10 +46,12 @@ pub fn main() anyerror!void {
 
     var buf = std.io.bufferedWriter(std.io.getStdOut().writer());
     const writer = buf.writer();
+    // header
     try writer.print("P3\n{} {}\n255\n", .{ image_width, image_height });
 
     const err_writer = std.io.getStdErr().writer();
 
+    // render
     var j: i32 = image_height - 1;
     while (j >= 0) : (j -= 1) {
         try err_writer.print("\rScanlines remaining: {d: <3}", .{@intCast(u32, j)});

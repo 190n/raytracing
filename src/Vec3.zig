@@ -94,11 +94,11 @@ pub fn divScalar(self: *const Vec3, t: f64) Vec3 {
     return self.mulScalar(1.0 / t);
 }
 
-pub fn dot(u: *const Vec3, v: Vec3) f64 {
+pub fn dot(u: Vec3, v: Vec3) f64 {
     return u.e[0] * v.e[0] + u.e[1] * v.e[1] + u.e[2] * v.e[2];
 }
 
-pub fn cross(u: *const Vec3, v: Vec3) Vec3 {
+pub fn cross(u: Vec3, v: Vec3) Vec3 {
     return Vec3.create(
         u.e[1] * v.e[2] - u.e[2] * v.e[1],
         u.e[2] * v.e[0] - u.e[0] * v.e[2],

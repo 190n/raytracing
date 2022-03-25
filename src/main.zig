@@ -13,10 +13,7 @@ fn hitSphere(center: Point3, radius: f64, r: Ray) f64 {
     const c = oc.lengthSquared() - radius * radius;
     const discriminant = half_b * half_b - a * c;
 
-    return switch (discriminant) {
-        -std.math.inf(f64)...0 => -1.0,
-        else => (-half_b - std.math.sqrt(discriminant)) / a,
-    };
+    return if (discriminant < 0.0) (-1.0) else (-half_b - std.math.sqrt(discriminant)) / a;
 }
 
 fn rayColor(r: Ray) Color {

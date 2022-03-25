@@ -112,7 +112,7 @@ pub fn unitVector(v: *const Vec3) Vec3 {
 pub const Point3 = Vec3;
 pub const Color = Vec3;
 
-fn expectEqualVector(expected: []const f64, actual: Vec3) !void {
+pub fn expectEqualVector(expected: []const f64, actual: Vec3) !void {
     for (expected) |v, i| {
         try std.testing.expectApproxEqRel(v, actual.e[i], 0.0001);
     }

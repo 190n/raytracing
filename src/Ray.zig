@@ -6,10 +6,6 @@ dir: Vec3,
 
 const Ray = @This();
 
-pub fn zero() Ray {
-    return .{ .orig = Point3.zero(), .dir = Vec3.zero() };
-}
-
 pub fn init(the_origin: Point3, the_direction: Vec3) Ray {
     return .{ .orig = the_origin, .dir = the_direction };
 }
@@ -27,12 +23,6 @@ pub fn at(self: *const Ray, t: f64) Point3 {
 }
 
 const expectEqualVector = Vec3.expectEqualVector;
-
-test "Ray.zero" {
-    const r = Ray.zero();
-    try expectEqualVector(&[_]f64{ 0.0, 0.0, 0.0 }, r.orig);
-    try expectEqualVector(&[_]f64{ 0.0, 0.0, 0.0 }, r.dir);
-}
 
 test "Ray.init" {
     const r = Ray.init(Vec3.init(1.0, 2.0, 3.0), Vec3.init(4.0, 5.0, 6.0));

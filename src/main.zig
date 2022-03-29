@@ -17,14 +17,14 @@ fn hitSphere(center: Point3, radius: f64, r: Ray) f64 {
 }
 
 fn rayColor(r: Ray) Color {
-    var t = hitSphere(Point3.create(0.0, 0.0, -1.0), 0.5, r);
+    var t = hitSphere(Point3.init(0.0, 0.0, -1.0), 0.5, r);
     if (t > 0.0) {
-        const N = r.at(t).sub(Vec3.create(0.0, 0.0, -1.0)).unitVector();
-        return Color.create(N.x() + 1.0, N.y() + 1.0, N.z() + 1.0).mulScalar(0.5);
+        const N = r.at(t).sub(Vec3.init(0.0, 0.0, -1.0)).unitVector();
+        return Color.init(N.x() + 1.0, N.y() + 1.0, N.z() + 1.0).mulScalar(0.5);
     } else {
         const unit_direction = r.dir.unitVector();
         t = 0.5 * (unit_direction.y() + 1.0);
-        return Color.create(1.0, 1.0, 1.0).mulScalar(1.0 - t).add(Color.create(0.5, 0.7, 1.0).mulScalar(t));
+        return Color.init(1.0, 1.0, 1.0).mulScalar(1.0 - t).add(Color.init(0.5, 0.7, 1.0).mulScalar(t));
     }
 }
 
@@ -40,12 +40,12 @@ pub fn main() anyerror!void {
     const focal_length = 1.0;
 
     const origin = Point3.zero();
-    const horizontal = Vec3.create(viewport_width, 0.0, 0.0);
-    const vertical = Vec3.create(0.0, viewport_height, 0.0);
+    const horizontal = Vec3.init(viewport_width, 0.0, 0.0);
+    const vertical = Vec3.init(0.0, viewport_height, 0.0);
     const lower_left_corner = origin
         .sub(horizontal.divScalar(2.0))
         .sub(vertical.divScalar(2.0))
-        .sub(Vec3.create(0.0, 0.0, focal_length));
+        .sub(Vec3.init(0.0, 0.0, focal_length));
 
     var buf = std.io.bufferedWriter(std.io.getStdOut().writer());
     const writer = buf.writer();
@@ -63,7 +63,7 @@ pub fn main() anyerror!void {
         while (i < image_width) : (i += 1) {
             const u = @intToFloat(f64, i) / (image_width - 1);
             const v = @intToFloat(f64, j) / (image_height - 1);
-            const r = Ray.create(origin, lower_left_corner
+            const r = Ray.init(origin, lower_left_corner
                 .add(horizontal.mulScalar(u))
                 .add(vertical.mulScalar(v))
                 .sub(origin));

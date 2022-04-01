@@ -5,8 +5,8 @@ const Ray = @import("./Ray.zig");
 const Hittable = @This();
 
 pub const HitRecord = struct {
-    p: point3,
-    normal: vec3,
+    p: Point3,
+    normal: Vec3,
     t: f64,
 };
 

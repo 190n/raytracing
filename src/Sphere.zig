@@ -4,6 +4,7 @@ const Vec3 = @import("./Vec3.zig");
 const Point3 = Vec3.Point3;
 const Ray = @import("./Ray.zig");
 const Hittable = @import("./Hittable.zig");
+const HitRecord = Hittable.HitRecord;
 
 const Sphere = @This();
 
@@ -24,7 +25,7 @@ pub fn hittable(self: *const Sphere) Hittable {
     };
 }
 
-pub fn hit(self_opaque: *const anyopaque, r: Ray, t_min: f64, t_max: f64) ?Hittable.HitRecord {
+pub fn hit(self_opaque: *const anyopaque, r: Ray, t_min: f64, t_max: f64) ?HitRecord {
     const self = @ptrCast(*const Sphere, @alignCast(@alignOf(Sphere), self_opaque));
 
     const oc = r.origin().sub(self.center);
@@ -47,11 +48,15 @@ pub fn hit(self_opaque: *const anyopaque, r: Ray, t_min: f64, t_max: f64) ?Hitta
     }
 
     const point = r.at(root);
-    return Hittable.HitRecord{
+    var rec = HitRecord{
         .t = root,
         .p = point,
-        .normal = point.sub(self.center).divScalar(self.radius),
+        .normal = undefined,
+        .front_face = undefined,
     };
+    const outward_normal = point.sub(self.center).divScalar(self.radius);
+    rec.setFaceNormal(r, outward_normal);
+    return rec;
 }
 
 const expectEqualVector = Vec3.expectEqualVector;
@@ -69,9 +74,10 @@ const SphereTest = struct {
     ray: Ray,
     t_min: f64,
     t_max: f64,
-    result: ?Hittable.HitRecord,
+    result: ?HitRecord,
 };
 
+// zig fmt: off
 const sphereTests = [_]SphereTest{
     // miss
     .{
@@ -87,10 +93,11 @@ const sphereTests = [_]SphereTest{
         .ray = Ray.init(Point3.init(-2.0, 0.0, 0.0), Vec3.init(1.0, 0.0, 0.0)),
         .t_min = 0.0,
         .t_max = 1.0,
-        .result = Hittable.HitRecord{
+        .result = HitRecord{
             .p = Point3.init(-1.0, 0.0, 0.0),
             .normal = Vec3.init(-1.0, 0.0, 0.0),
             .t = 1.0,
+            .front_face = true,
         },
     },
     // hit too early
@@ -107,13 +114,15 @@ const sphereTests = [_]SphereTest{
         .ray = Ray.init(Point3.init(-2.0, 0.0, 0.0), Vec3.init(1.0, 0.0, 0.0)),
         .t_min = 1.9,
         .t_max = 10.0,
-        .result = Hittable.HitRecord{
+        .result = HitRecord{
             .p = Point3.init(1.0, 0.0, 0.0),
-            .normal = Vec3.init(1.0, 0.0, 0.0),
+            .normal = Vec3.init(-1.0, 0.0, 0.0),
             .t = 3.0,
+            .front_face = false,
         },
     },
 };
+// zig fmt: on
 
 test "Sphere.hit" {
     for (sphereTests) |st| {

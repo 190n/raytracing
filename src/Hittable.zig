@@ -8,6 +8,12 @@ pub const HitRecord = struct {
     p: Point3,
     normal: Vec3,
     t: f64,
+    front_face: bool,
+
+    pub inline fn setFaceNormal(self: *HitRecord, r: Ray, outward_normal: Vec3) void {
+        self.front_face = Vec3.dot(r.direction(), outward_normal) < 0;
+        self.normal = if (self.front_face) outward_normal else outward_normal.neg();
+    }
 };
 
 impl: *const anyopaque,

@@ -10,8 +10,8 @@ pub const HitRecord = struct {
     t: f64,
 };
 
-impl: *anyopaque,
-hitFn: fn (impl: *anyopaque, r: Ray, t_min: f64, t_max: f64) ?HitRecord,
+impl: *const anyopaque,
+hitFn: fn (impl: *const anyopaque, r: Ray, t_min: f64, t_max: f64) ?HitRecord,
 
 pub fn hit(iface: *const Hittable, r: Ray, t_min: f64, t_max: f64) ?HitRecord {
     return iface.hitFn(iface.impl, r, t_min, t_max);

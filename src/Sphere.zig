@@ -73,6 +73,7 @@ const SphereTest = struct {
 };
 
 const sphereTests = [_]SphereTest{
+    // miss
     .{
         .sphere = Sphere.init(Point3.zero(), 1.0),
         .ray = Ray.init(Point3.init(-2.0, 0.0, 0.0), Vec3.init(1.0, -1.0, 0.0)),
@@ -80,6 +81,7 @@ const sphereTests = [_]SphereTest{
         .t_max = 10.0,
         .result = null
     },
+    // direct hit
     .{
         .sphere = Sphere.init(Point3.zero(), 1.0),
         .ray = Ray.init(Point3.init(-2.0, 0.0, 0.0), Vec3.init(1.0, 0.0, 0.0)),
@@ -90,11 +92,38 @@ const sphereTests = [_]SphereTest{
             .normal = Vec3.init(-1.0, 0.0, 0.0),
             .t = 1.0,
         },
-    }
+    },
+    // hit too early
+    .{
+        .sphere = Sphere.init(Point3.zero(), 1.0),
+        .ray = Ray.init(Point3.init(-2.0, 0.0, 0.0), Vec3.init(1.0, 0.0, 0.0)),
+        .t_min = 1.01,
+        .t_max = 1.1,
+        .result = null,
+    },
+    // find the second hit
+    .{
+        .sphere = Sphere.init(Point3.zero(), 1.0),
+        .ray = Ray.init(Point3.init(-2.0, 0.0, 0.0), Vec3.init(1.0, 0.0, 0.0)),
+        .t_min = 1.9,
+        .t_max = 10.0,
+        .result = Hittable.HitRecord{
+            .p = Point3.init(1.0, 0.0, 0.0),
+            .normal = Vec3.init(1.0, 0.0, 0.0),
+            .t = 3.0,
+        },
+    },
 };
 
 test "Sphere.hit" {
     for (sphereTests) |st| {
         try std.testing.expectEqual(st.result, st.sphere.hit(st.ray, st.t_min, st.t_max));
+    }
+}
+
+test "Sphere.hit via interface" {
+    for (sphereTests) |st| {
+        const hittable_obj = st.sphere.hittable();
+        try std.testing.expectEqual(st.result, hittable_obj.hit(st.ray, st.t_min, st.t_max));
     }
 }
